@@ -43,6 +43,8 @@ public class PromptProvider {
 
     private static final String DEFAULT_SEARCH_PARAMETERS_VAR = "default_search_parameters";
     private static final String DEFAULT_PROPERTIES_ATTRIBUTES_VAR = "default_properties_attributes";
+    private static final String USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR = "user_search_request_output_structure";
+    private static final String PROPERTIES_DATA_OUTPUT_STRUCTURE_VAR = "properties_data_output_structure";
 
     private static final String USER_SEARCH_REQUEST_OUTPUT_STRUCTURE =
             // language=JSON
@@ -79,7 +81,7 @@ public class PromptProvider {
                 ```
                 Gather data according to the provided search parameters. Outputs should be clear and structured in json format:
                 ```
-                %s
+                {%s}
                 ```
                 Once mandatory data collected, set the `isAllDataCollected` field as true. The `textResponse`
                 must contain the follow up polite question about the missing search parameters if the search request mandatory parameters are still missing.
@@ -90,17 +92,22 @@ public class PromptProvider {
                 to reach the user out when anything similar to the request show up on the database.
                 
                 User prompt:
-                """.formatted(DEFAULT_SEARCH_PARAMETERS_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE);
+                """.formatted(DEFAULT_SEARCH_PARAMETERS_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR);
     }
 
 
     public Prompt getSystemPromptForAgent() {
         return SystemPromptTemplate.builder()
                 .template(PromptProvider.getChatSystemPrompt())
-                .variables(Map.of(DEFAULT_SEARCH_PARAMETERS_VAR, DEFAULT_SEARCH_PARAMETERS))
+                .variables(
+                        Map.of(
+                                DEFAULT_SEARCH_PARAMETERS_VAR, DEFAULT_SEARCH_PARAMETERS,
+                                USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE)
+                )
                 .build().create(
                         ChatOptions.builder()
                                 .model(chatBotModel)
+                                .temperature(1.0)
                                 .build()
                 );
     }
@@ -109,10 +116,14 @@ public class PromptProvider {
         log.info(System.lineSeparator() + FAKE_PROPERTIES_DATA_GENERATOR_SYSTEM_PROMPT);
         return SystemPromptTemplate.builder()
                 .template(FAKE_PROPERTIES_DATA_GENERATOR_SYSTEM_PROMPT)
-                .variables(Map.of(DEFAULT_PROPERTIES_ATTRIBUTES_VAR, DEFAULT_FAKE_PROPERTIES_PARAMETERS))
+                .variables(Map.of(
+                        DEFAULT_PROPERTIES_ATTRIBUTES_VAR, DEFAULT_FAKE_PROPERTIES_PARAMETERS,
+                        PROPERTIES_DATA_OUTPUT_STRUCTURE_VAR, PROPERTIES_DATA_OUTPUT_STRUCTURE
+                ))
                 .build().create(
                         ChatOptions.builder()
                                 .model(generatorModel)
+                                .temperature(1.0)
                                 .build()
                 );
     }
@@ -153,10 +164,10 @@ public class PromptProvider {
             Ensure the generated data is coherent and plausible, reflecting real-world real estate market trends.
             The data should be structured in json format:
              ```
-             %s
+             {%s}
              ```
             Be creative and add details about see sights, parks and other interesting places nearby.
             Avoid using any real personal information or addresses except countries and cities; all data must be entirely fictional.
-            """.formatted(DEFAULT_PROPERTIES_ATTRIBUTES_VAR, PROPERTIES_DATA_OUTPUT_STRUCTURE);
+            """.formatted(DEFAULT_PROPERTIES_ATTRIBUTES_VAR, PROPERTIES_DATA_OUTPUT_STRUCTURE_VAR);
 
 }
