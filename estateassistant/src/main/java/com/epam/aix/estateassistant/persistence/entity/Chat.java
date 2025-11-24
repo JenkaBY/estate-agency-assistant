@@ -1,0 +1,29 @@
+package com.epam.aix.estateassistant.persistence.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(collection = "chats")
+public class Chat {
+    @Id
+    private String id;
+
+    private String title;
+
+    private String description;
+
+    private String essentialInfo;
+
+    private List<ChatMessage> messages = new ArrayList<>();
+}
