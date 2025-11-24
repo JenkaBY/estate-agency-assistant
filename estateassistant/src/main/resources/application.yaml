@@ -1,0 +1,27 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: estate-agency-assistant
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/estate-assistant-db
+  ai:
+    openai:
+      api-key: THISISOPENAPIKEY
+      chat:
+        options:
+          model: gpt-5-nano
+#          temperature: 1
+
+app:
+  chatbot:
+    model: gpt-5-nano
+  properties-generator:
+    model: gpt-5-nano
+  estate-agency:
+    name: "Dream Homes Realty"
+    location: "Hogwarts Castle, Highlands, Scotland"
+    contact:
+      email: "damboldor.estate@hogwarts.miracle"
+      phone: "+44 1234 567890"
