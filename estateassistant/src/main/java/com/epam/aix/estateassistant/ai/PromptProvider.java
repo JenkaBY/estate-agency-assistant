@@ -7,10 +7,8 @@ import com.epam.aix.estateassistant.service.dto.PropertiesSearchParameter;
 import com.epam.aix.estateassistant.service.dto.PropertiesSearchParameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -61,71 +59,62 @@ public class PromptProvider {
                          "type": %s
                         } ]
                     }
-                    """.formatted(Arrays.toString(ParameterType.values()), Arrays.asList(ParameterValueType.values()));
+                    """.formatted(getOptions(ParameterType.PROPERTY_TYPE), getOptions(ParameterValueType.EXACT)
+            );
 
-    @Value("${app.chatbot.model}")
-    private final String chatBotModel;
-
-    @Value("${app.properties-generator.model}")
-    private final String generatorModel;
-
-    private static String getChatSystemPrompt() {
-        return """
-                You are a helpful real estate assistant to assist users with their real estate needs.
-                Provide accurate and concise information about properties, buying, and renting for nearby a location provided in user prompt.
-                Always maintain a professional and friendly tone.
-                Interact with users in a way that reflects the values and services of a reputable real estate agency.
-                Ask clarifying questions if needed to better understand user requirements until you can provide the best possible assistance and fulfill the following user search properties request parameters
-                ```
-                {%s}
-                ```
-                Gather data according to the provided search parameters. Outputs should be clear and structured in json format:
-                ```
-                {%s}
-                ```
-                Once mandatory data collected, set the `isAllDataCollected` field as true. The `textResponse`
-                must contain the follow up polite question about the missing search parameters if the search request mandatory parameters are still missing.
-                When all mandatory parameters are collected, provide a list of available properties that match the user's criteria.
-                
-                Answer only in the context of real estate and avoid unrelated topics. Don't provide any user PII data expect phone number and property address.
-                if the looking for a property is not found in available on the market list, suggest to leave a contact
-                to reach the user out when anything similar to the request show up on the database.
-                
-                User prompt:
-                """.formatted(DEFAULT_SEARCH_PARAMETERS_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR);
+    private static String getOptions(Enum<?> enumType) {
+        return String.join("|", Arrays.stream(enumType.getClass().getEnumConstants())
+                .map(Enum::name)
+                .toList());
     }
 
+    private static final String CHAT_SYSTEM_PROMPT =
+            """
+                    You are a helpful real estate assistant to assist users with their real estate needs.
+                    Provide accurate and concise information about properties, buying, and renting for nearby a location provided in user prompt.
+                    Always maintain a professional and friendly tone.
+                    Interact with users in a way that reflects the values and services of a reputable real estate agency.
+                    Ask clarifying questions if needed to better understand user requirements until you can provide the best possible assistance and fulfill the following user search properties request parameters
+                    ```
+                    {%s}
+                    ```
+                    Gather data according to the provided search parameters. Outputs should be clear and structured in json format:
+                    ```
+                    {%s}
+                    ```
+                    Once mandatory data collected, set the `isAllDataCollected` field as true. The `textResponse`
+                    must contain the follow up polite question about the missing search parameters if the search request mandatory parameters are still missing.
+                    When all mandatory parameters are collected, provide a list of available properties that match the user's criteria.
+                    
+                    Answer only in the context of real estate and avoid unrelated topics. Don't provide any user PII data expect phone number and property address.
+                    if the looking for a property is not found in available on the market list, suggest to leave a contact
+                    to reach the user out when anything similar to the request show up on the database.
+                    
+                    User prompt:
+                    """.formatted(DEFAULT_SEARCH_PARAMETERS_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR);
 
-    public Prompt getSystemPromptForAgent() {
+
+    public Prompt getSystemPromptForChat() {
+        log.info(System.lineSeparator() + CHAT_SYSTEM_PROMPT);
+
         return SystemPromptTemplate.builder()
-                .template(PromptProvider.getChatSystemPrompt())
+                .template(CHAT_SYSTEM_PROMPT)
                 .variables(
                         Map.of(
                                 DEFAULT_SEARCH_PARAMETERS_VAR, DEFAULT_SEARCH_PARAMETERS,
                                 USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE)
                 )
-                .build().create(
-                        ChatOptions.builder()
-                                .model(chatBotModel)
-                                .temperature(1.0)
-                                .build()
-                );
+                .build().create();
     }
 
     public Prompt getPropertiesDataGeneratorPrompt() {
-        log.info(System.lineSeparator() + FAKE_PROPERTIES_DATA_GENERATOR_SYSTEM_PROMPT);
         return SystemPromptTemplate.builder()
                 .template(FAKE_PROPERTIES_DATA_GENERATOR_SYSTEM_PROMPT)
                 .variables(Map.of(
                         DEFAULT_PROPERTIES_ATTRIBUTES_VAR, DEFAULT_FAKE_PROPERTIES_PARAMETERS,
                         PROPERTIES_DATA_OUTPUT_STRUCTURE_VAR, PROPERTIES_DATA_OUTPUT_STRUCTURE
                 ))
-                .build().create(
-                        ChatOptions.builder()
-                                .model(generatorModel)
-                                .temperature(1.0)
-                                .build()
-                );
+                .build().create();
     }
 
     private static final String PROPERTIES_DATA_OUTPUT_STRUCTURE =

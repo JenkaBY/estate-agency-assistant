@@ -1,15 +1,17 @@
 package com.epam.aix.estateassistant.service;
 
 import com.epam.aix.estateassistant.downstream.AiAssistanceService;
-import com.epam.aix.estateassistant.persistence.entity.Chat;
 import com.epam.aix.estateassistant.persistence.ChatRepository;
+import com.epam.aix.estateassistant.persistence.entity.Chat;
 import com.epam.aix.estateassistant.persistence.projection.ChatIdTitleProjection;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ChatService {
@@ -34,5 +36,9 @@ public class ChatService {
     }
 
 
-
+    public String talk(String chatId, String message) {
+        String response = aiAssistanceService.getResponse(chatId, message);
+        log.info("AI Assistance response for chatId {}: {}", chatId, response);
+        return response;
+    }
 }
