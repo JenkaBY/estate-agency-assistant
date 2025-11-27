@@ -1,6 +1,6 @@
 package com.epam.aix.estateassistant.config;
 
-import com.epam.aix.estateassistant.ai.PromptProvider;
+import com.epam.aix.estateassistant.config.prompt.PromptProvider;
 import com.epam.aix.estateassistant.service.dto.UserGatheredPropertiesSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
@@ -29,6 +29,8 @@ public class AiConfig {
     @Value("${app.properties-generator.model}")
     private final String generatorModel;
 
+    private final PromptProvider chatAgencyPromptProvider;
+    private final PromptProvider fakeRealEstateApiPromptProvider;
 
     @Bean
     public PromptChatMemoryAdvisor promptChatMemoryAdvisor(
@@ -53,8 +55,7 @@ public class AiConfig {
     }
 
     @Bean
-    ChatClient agentChatClient(ChatClient.Builder builder, PromptChatMemoryAdvisor promptChatMemoryAdvisor,
-                               PromptProvider promptProvider) {
+    ChatClient agentChatClient(ChatClient.Builder builder, PromptChatMemoryAdvisor promptChatMemoryAdvisor) {
 
         var structuredValidatorAdvisor = StructuredOutputValidationAdvisor.builder()
                 .outputType(UserGatheredPropertiesSearch.class)
@@ -66,20 +67,19 @@ public class AiConfig {
                         .model(chatBotModel)
                         .temperature(1.0)
                         .build())
-                .defaultSystem(promptProvider.getSystemPromptForChat().getContents())
+                .defaultSystem(chatAgencyPromptProvider.getSystemPrompt().getContents())
                 .defaultAdvisors(promptChatMemoryAdvisor, SIMPLE_LOGGER_ADVISOR, structuredValidatorAdvisor)
                 .build();
     }
 
     @Bean
-    ChatClient propertiesGeneratorClient(ChatClient.Builder builder, PromptChatMemoryAdvisor promptChatMemoryAdvisor,
-                                         PromptProvider promptProvider) {
+    ChatClient propertiesGeneratorClient(ChatClient.Builder builder, PromptChatMemoryAdvisor promptChatMemoryAdvisor) {
         return builder
                 .defaultOptions(OpenAiChatOptions.builder()
                         .model(generatorModel)
                         .temperature(1.0)
                         .build())
-                .defaultSystem(promptProvider.getPropertiesDataGeneratorPrompt().getContents())
+                .defaultSystem(fakeRealEstateApiPromptProvider.getSystemPrompt().getContents())
                 .defaultAdvisors(promptChatMemoryAdvisor, SIMPLE_LOGGER_ADVISOR)
                 .build();
     }
