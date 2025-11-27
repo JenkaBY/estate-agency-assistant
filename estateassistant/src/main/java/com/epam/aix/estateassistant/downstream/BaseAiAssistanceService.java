@@ -1,5 +1,6 @@
 package com.epam.aix.estateassistant.downstream;
 
+import com.epam.aix.estateassistant.service.dto.UserGatheredPropertiesSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -13,7 +14,9 @@ public class BaseAiAssistanceService implements AiAssistanceService {
 
     @Override
     public String generateWelcomeContent(String assistantName) {
-        return "Welcome to %s's Estate Assistant! How can I assist you today?".formatted(assistantName);
+        return ("Welcome to %s's Estate, your trusted partner in real estate." +
+                " I'm here to help you with all your property needs, whether you're looking to rent or buy." +
+                " Feel free to ask any questions!?").formatted(assistantName);
     }
 
     @Override
@@ -22,6 +25,6 @@ public class BaseAiAssistanceService implements AiAssistanceService {
                 .user(message)
                 .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, chatId))
                 .call()
-                .content();
+                .responseEntity(UserGatheredPropertiesSearch.class).entity().textResponse();
     }
 }
