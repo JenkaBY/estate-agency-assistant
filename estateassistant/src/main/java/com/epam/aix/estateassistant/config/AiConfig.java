@@ -1,6 +1,7 @@
 package com.epam.aix.estateassistant.config;
 
 import com.epam.aix.estateassistant.config.prompt.PromptProvider;
+import com.epam.aix.estateassistant.downstream.property.PropertiesService;
 import com.epam.aix.estateassistant.service.dto.UserGatheredPropertiesSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
@@ -10,12 +11,15 @@ import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvi
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.mongo.MongoChatMemoryRepository;
+import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.tool.function.FunctionToolCallback;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
 
 @RequiredArgsConstructor
 @Configuration
@@ -55,14 +59,21 @@ public class AiConfig {
     }
 
     @Bean
-    ChatClient agentChatClient(ChatClient.Builder builder, PromptChatMemoryAdvisor promptChatMemoryAdvisor) {
+    ChatClient agentChatClient(ChatClient.Builder builder, PromptChatMemoryAdvisor promptChatMemoryAdvisor,
+                               PropertiesService fakePropertiesService, ToolCallingManager toolCallingManager) {
 
         var structuredValidatorAdvisor = StructuredOutputValidationAdvisor.builder()
                 .outputType(UserGatheredPropertiesSearch.class)
-                .maxRepeatAttempts(3)
+                .maxRepeatAttempts(2)
+                .build();
+
+        var searchPropertiesToolCallback = FunctionToolCallback.builder("realEstateService", fakePropertiesService)
+                .description("A service to search for real estate properties based on user-defined attributes.")
+                .inputType(PropertiesService.Request.class)
                 .build();
 
         return builder
+                .defaultToolCallbacks(searchPropertiesToolCallback)
                 .defaultOptions(OpenAiChatOptions.builder()
                         .model(chatBotModel)
                         .temperature(1.0)
@@ -74,13 +85,19 @@ public class AiConfig {
 
     @Bean
     ChatClient propertiesGeneratorClient(ChatClient.Builder builder, PromptChatMemoryAdvisor promptChatMemoryAdvisor) {
+
+        var structuredValidatorAdvisor = StructuredOutputValidationAdvisor.builder()
+                .outputType(PropertiesService.RESPONSE_TYPE_REF)
+                .maxRepeatAttempts(3)
+                .build();
+
         return builder
                 .defaultOptions(OpenAiChatOptions.builder()
                         .model(generatorModel)
                         .temperature(1.0)
                         .build())
                 .defaultSystem(fakeRealEstateApiPromptProvider.getSystemPrompt().getContents())
-                .defaultAdvisors(promptChatMemoryAdvisor, SIMPLE_LOGGER_ADVISOR)
+                .defaultAdvisors(SIMPLE_LOGGER_ADVISOR, structuredValidatorAdvisor)
                 .build();
     }
 }
