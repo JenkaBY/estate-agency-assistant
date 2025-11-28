@@ -22,7 +22,7 @@ public class FakeRealEstateApiPromptProvider implements PromptProvider {
 
     private static final String FAKE_PROPERTIES_DATA_GENERATOR_SYSTEM_PROMPT = """
             You are a data generator that creates fake real estate property listings for testing purposes.
-            Generate realistic and diverse property data of 3 records including the attributes described below:
+            Generate realistic and diverse property data of 2 records including the attributes described below:
             ```
             {%s}
             ```.
@@ -33,6 +33,7 @@ public class FakeRealEstateApiPromptProvider implements PromptProvider {
              ```
             Be creative and add details about see sights, parks and other interesting places nearby.
             Avoid using any real personal information or addresses except countries and cities; all data must be entirely fictional.
+            The generated properties should fit to the search attributes provided in user prompts in json format.
             """.formatted(DEFAULT_PROPERTIES_ATTRIBUTES_VAR, PROPERTIES_DATA_OUTPUT_STRUCTURE_VAR);
 
     private static final String PROPERTIES_DATA_OUTPUT_STRUCTURE =
@@ -52,17 +53,17 @@ public class FakeRealEstateApiPromptProvider implements PromptProvider {
                         "amount": 350000,
                         "currency": "EUR"
                       },
-                      "size_sqm": 120,
-                      "number_of_rooms": {
+                      "sizeSqm": 120,
+                      "numberOfRooms": {
                         "bedrooms": 3,
                         "bathrooms": 2
                       },
-                      "property_type": "House",
+                      "propertyType": "House",
                       "amenities": ["Garage", "Garden", "Fireplace"],
-                      "additional_features": ["Closest school is 5 km away", "Public bus stop in 5 minutes walking distance", "Nearby park with playground"],
-                      "year_built": 2010,
-                      "listing_date": "2024-01-15",
-                      "card_link": "http://www.fake-estate-agency.com/properties/unique-property-id"
+                      "additionalFeatures": ["Closest school is 5 km away", "Public bus stop in 5 minutes walking distance", "Nearby park with playground"],
+                      "yearBuilt": 2010,
+                      "listingDate": "2024-01-15",
+                      "cardLink": "http://www.fake-estate-agency.com/properties/unique-property-id"
                     }
                     """;
 

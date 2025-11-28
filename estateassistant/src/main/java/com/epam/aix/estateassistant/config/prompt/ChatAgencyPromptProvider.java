@@ -34,13 +34,11 @@ public class ChatAgencyPromptProvider implements PromptProvider {
                     ```
                     Once mandatory data collected, set the `isAllDataCollected` field as true. The `textResponse`
                     must contain the follow up polite question about the missing search parameters if the search request mandatory parameters are still missing.
-                    When all mandatory parameters are collected, provide a list of available properties that match the user's criteria.
+                    When all mandatory parameters are collected, provide a list of available properties that match the user's criteria by calling the real estate service.
+                    A result returned by the real estate service must be in html format.
                     
                     Answer only in the context of real estate and avoid unrelated topics. Don't provide any user PII data expect phone number and property address.
-                    if the looking for a property is not found in available on the market list, suggest to leave a contact
-                    to reach the user out when anything similar to the request show up on the database.
-                    
-                    User prompt:
+                    If the looking for a property is not found in available on the market list, suggest to leave a contact to reach the user out when anything similar to the request show up on the database.
                     """.formatted(DEFAULT_SEARCH_PARAMETERS_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR);
 
     private static final String USER_SEARCH_REQUEST_OUTPUT_STRUCTURE =
@@ -63,7 +61,7 @@ public class ChatAgencyPromptProvider implements PromptProvider {
 
     @Override
     public Prompt getSystemPrompt() {
-        log.info(System.lineSeparator() + CHAT_SYSTEM_PROMPT);
+        log.debug("{}{}", System.lineSeparator(), CHAT_SYSTEM_PROMPT);
 
         return SystemPromptTemplate.builder()
                 .template(CHAT_SYSTEM_PROMPT)
