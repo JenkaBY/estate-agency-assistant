@@ -1,7 +1,8 @@
 package com.epam.aix.estateassistant.service.dto;
 
 public enum ParameterType {
-    LOCATION("country, city, neighborhood") ,
+    SERVICE_TYPE("rent, buy"),
+    LOCATION("country, city, neighborhood"),
     PRICE("exact price"),
     SIZE ("square meters"),
     NUMBER_OF_ROOMS("number of bedrooms and bathrooms"),

@@ -16,6 +16,7 @@ class PromptUtils {
 
     public static final PropertiesSearchParameters DEFAULT_SEARCH_PARAMETERS =
             new PropertiesSearchParameters(List.of(
+                    PropertiesSearchParameter.of(ParameterType.SERVICE_TYPE, MANDATORY),
                     PropertiesSearchParameter.of(ParameterType.LOCATION, MANDATORY),
                     PropertiesSearchParameter.of(ParameterType.PRICE, MANDATORY),
                     PropertiesSearchParameter.of(ParameterType.PROPERTY_TYPE, MANDATORY),
