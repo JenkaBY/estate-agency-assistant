@@ -1,7 +1,5 @@
 package com.epam.aix.estateassistant.config.prompt;
 
-import com.epam.aix.estateassistant.service.dto.ParameterType;
-import com.epam.aix.estateassistant.service.dto.ParameterValueType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -16,7 +14,6 @@ import java.util.Map;
 public class ChatAgencyPromptProvider implements PromptProvider {
 
     private static final String DEFAULT_SEARCH_PARAMETERS_VAR = "default_search_parameters";
-    private static final String USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR = "user_search_request_output_structure";
 
     private static final String CHAT_SYSTEM_PROMPT =
             """
@@ -28,36 +25,16 @@ public class ChatAgencyPromptProvider implements PromptProvider {
                     ```
                     {%s}
                     ```
-                    Gather data according to the provided search parameters. Outputs should be clear and structured in json format:
-                    ```
-                    {%s}
-                    ```
+                    Gather data according to the provided search parameters. Outputs should be clear and structured in json that schema is provided.
+                    
                     Once mandatory data collected, set the `isAllDataCollected` field as true. The `textResponse`
                     must contain the follow up polite question about the missing search parameters if the search request mandatory parameters are still missing.
                     When all mandatory parameters are collected, provide a list of available properties that match the user's criteria by calling the real estate service.
-                    A result returned by the real estate service must be in html format.
+                    A result returned by the real estate service must be in html format. Link must be opened in a new tab.
                     
                     Answer only in the context of real estate and avoid unrelated topics. Don't provide any user PII data expect phone number and property address.
                     If the looking for a property is not found in available on the market list, suggest to leave a contact to reach the user out when anything similar to the request show up on the database.
-                    """.formatted(DEFAULT_SEARCH_PARAMETERS_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR);
-
-    private static final String USER_SEARCH_REQUEST_OUTPUT_STRUCTURE =
-            // language=JSON
-            """
-                    {
-                    "isAllDataCollected": true/false,
-                    "textResponse": "response text to the user",
-                    "searchAttributes": [{
-                        "parameter": {
-                            "name": %s,
-                            "mandatory":  true/false
-                            },
-                         "value": "user provided value",
-                         "type": %s
-                        } ]
-                    }
-                    """.formatted(PromptUtils.getOptions(ParameterType.PROPERTY_TYPE), PromptUtils.getOptions(ParameterValueType.EXACT)
-            );
+                    """.formatted(DEFAULT_SEARCH_PARAMETERS_VAR);
 
     @Override
     public Prompt getSystemPrompt() {
@@ -67,8 +44,7 @@ public class ChatAgencyPromptProvider implements PromptProvider {
                 .template(CHAT_SYSTEM_PROMPT)
                 .variables(
                         Map.of(
-                                DEFAULT_SEARCH_PARAMETERS_VAR, PromptUtils.DEFAULT_SEARCH_PARAMETERS,
-                                USER_SEARCH_REQUEST_OUTPUT_STRUCTURE_VAR, USER_SEARCH_REQUEST_OUTPUT_STRUCTURE)
+                                DEFAULT_SEARCH_PARAMETERS_VAR, PromptUtils.DEFAULT_SEARCH_PARAMETERS)
                 )
                 .build().create();
     }
