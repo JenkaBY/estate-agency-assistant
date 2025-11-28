@@ -10,8 +10,8 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/chats")
 @RestController
+@RequestMapping("/api/v1/chats")
 public class AssistantApiController {
 
     private final ChatService chatService;

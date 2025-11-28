@@ -9,3 +9,7 @@ you should be able to present your solution in the form of a demo.
 
 Note: keep in mind that this is a simple task. Whenever you find yourself on a path that will take you more 
 than a couple of hours, it is probably not a good path. This task is about using Generative AI LLM model.
+
+### BACKLOG
+
+- [x] Create a simple UI - Telegram-like chat interface using FreeMarker templates

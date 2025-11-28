@@ -8,11 +8,18 @@ spring:
       uri: mongodb://localhost:27017/estate-assistant-db
   ai:
     openai:
-      api-key: THISISOPENAPIKEY
+      api-key: ${SECRET_API_KEY}
       chat:
         options:
           model: gpt-5-nano
 #          temperature: 1
+  freemarker:
+    template-loader-path: classpath:/templates/
+    suffix: .ftl
+    cache: false
+logging:
+  level:
+    org.springframework.ai.chat.client.advisor: DEBUG
 
 app:
   chatbot:
