@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -57,10 +58,10 @@ public class ChatService {
 
     @SneakyThrows
     private MessageDto toDto(Message input) {
-        if (input instanceof AssistantMessage assistantMessage) {
+        if (input instanceof AssistantMessage assistantMessage && assistantMessage.getText() != null) {
             var content = objectMapper.readValue(assistantMessage.getText(), UserGatheredPropertiesSearch.class).textResponse();
             return new MessageDto(input.getMessageType(), content);
         }
-        return new MessageDto(input.getMessageType(), input.getText());
+        return new MessageDto(input.getMessageType(), Optional.ofNullable(input.getText()).orElse("NA"));
     }
 }
