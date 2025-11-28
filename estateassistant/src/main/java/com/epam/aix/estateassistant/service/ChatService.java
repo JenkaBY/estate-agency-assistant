@@ -40,10 +40,10 @@ public class ChatService {
                 .toList();
     }
 
-    public UserGatheredPropertiesSearch talk(String chatId, String message) {
+    public String talk(String chatId, String message) {
         var response = aiAssistanceService.getResponse(chatId, message);
         log.info("AI Assistance response for chatId {}: {}", chatId, response);
-        return response.entity();
+        return response;
     }
 
     @SneakyThrows

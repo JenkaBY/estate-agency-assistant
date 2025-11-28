@@ -24,6 +24,6 @@ public class AssistantApiController {
     @PutMapping("/{chatId}")
     public String talk(@PathVariable("chatId") String chatId, @RequestBody UserMessageRequest request) {
         log.info("talk {} for user input: {}", chatId, request);
-        return chatService.talk(chatId, request.message()).textResponse();
+        return chatService.talk(chatId, request.message());
     }
 }
