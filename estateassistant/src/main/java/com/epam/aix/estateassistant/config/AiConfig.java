@@ -11,7 +11,6 @@ import org.springframework.ai.chat.client.advisor.StructuredOutputValidationAdvi
 import org.springframework.ai.chat.memory.ChatMemoryRepository;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.mongo.MongoChatMemoryRepository;
-import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.tool.function.FunctionToolCallback;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -60,7 +59,7 @@ public class AiConfig {
 
     @Bean
     ChatClient agentChatClient(ChatClient.Builder builder, PromptChatMemoryAdvisor promptChatMemoryAdvisor,
-                               PropertiesService fakePropertiesService, ToolCallingManager toolCallingManager) {
+                               PropertiesService fakePropertiesService) {
 
         var structuredValidatorAdvisor = StructuredOutputValidationAdvisor.builder()
                 .outputType(UserGatheredPropertiesSearch.class)

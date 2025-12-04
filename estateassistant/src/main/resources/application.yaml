@@ -19,11 +19,11 @@ spring:
     cache: false
 logging:
   level:
-    org.springframework.ai.chat.client.advisor: DEBUG
+    org.springframework.ai.chat.client.advisor: INFO
 
 app:
   chatbot:
-    model: gpt-5-nano
+    model: gpt-5-mini
   properties-generator:
     model: gpt-5-nano
   estate-agency:

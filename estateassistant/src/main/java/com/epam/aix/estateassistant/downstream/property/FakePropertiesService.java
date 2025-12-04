@@ -6,13 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service("realEstateService")
 public class FakePropertiesService implements PropertiesService {
 
     private final ChatClient propertiesGeneratorClient;
