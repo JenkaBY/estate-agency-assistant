@@ -1,3 +1,8 @@
+# Real Estate AI Assistant (chatbot)
+
+### Overview
+
+Task:
 
 Develop an AI-powered assistant for a real estate agency that assists potential buyers and renters in finding 
 their ideal property. The assistant should engage users in a conversation, asking questions about their 
@@ -10,6 +15,23 @@ you should be able to present your solution in the form of a demo.
 Note: keep in mind that this is a simple task. Whenever you find yourself on a path that will take you more 
 than a couple of hours, it is probably not a good path. This task is about using Generative AI LLM model.
 
-### BACKLOG
+### Simplified Project Architecture
 
-- [x] Create a simple UI - Telegram-like chat interface using FreeMarker templates
+Project architecture consists of the following main components:
+![Architecture](/assets/AI%20Real%20Estate%20Assistant.jpg)
+
+### Tools Used in the Project
+
+- Java 21
+- Spring Boot 3.5.8
+- Spring AI
+- Spring Data MongoDB: A module for interacting with MongoDB, used for managing chat memory and other data.
+- Freemarker: Template engine for rendering dynamic HTML content.
+- Gradle
+
+### To Run the Application
+
+1. Set the OpenAPI key in the `SECRET_API_KEY` environment variable.
+2. Ensure MongoDB is running locally on the default port (27017).
+3. Build and run the Spring Boot application using Gradle
+4. open a web browser and navigate to `http://localhost:8080` to access the chatbot interface.
